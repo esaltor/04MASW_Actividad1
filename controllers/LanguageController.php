@@ -23,7 +23,7 @@
     }
 
 
-     function updateLanguage ($languageId, $languageName, $isoCode) {
+    function updateLanguage ($languageId, $languageName, $isoCode) {
         $language = new Language($languageId, $languageName, $isoCode);
 
         $languageEdited = $language->update();
@@ -32,7 +32,6 @@
     }
 
     function getLanguageData($idLanguage) {
-        echo $idLanguage;
         $language = new Language($idLanguage);
         $languageObject = $language->getItem();
 

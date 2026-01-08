@@ -4,7 +4,7 @@ class Database {
 
     private static $host = "localhost";
     private static $user = "root";
-    private static $password = "root";
+    private static $password = "";
     private static $dbName = "04masw";
     private static $port = 3306;
 

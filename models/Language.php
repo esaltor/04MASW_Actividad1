@@ -1,17 +1,23 @@
 <?php
+    require_once __DIR__ . '/../config/database.php';
+
     class Language {
         private $id;
         private $nombre;
         private $isoCode;
 
         public function __construct($idLanguage = null, $nombreLanguage = null, $isoCode = null) {
-            #if(!is_null($idLanguage) && !is_null($nombreLanguage) && !is_null($isoCode) ) {
+            if (!is_null($idLanguage)) {
                 $this->id = $idLanguage;
-                $this->nombre = $nombreLanguage;
-                $this->isoCode = $isoCode;
-            #}
+            }
 
-           
+            if (!is_null($nombreLanguage)) {
+                $this->nombre = $nombreLanguage;
+            }
+
+            if (!is_null($isoCode)) {
+                $this->isoCode = $isoCode;
+            }
         }
 
         public function getId() {
@@ -38,23 +44,8 @@
             $this->nombre = $nombreLanguage;
         }
 
-        function initConnectionDb() {
-            $db_host = "localhost";
-            $db_user = "root";
-            $db_password = "+-+-";
-            $db_db = "04masw";
-
-            $mysqli = new mysqli($db_host, $db_user, $db_password, $db_db);
-
-            if ($mysqli->connect_error) {
-                die("Error: ".$mysqli->connect_error);
-            }
-
-            return $mysqli;
-        }
-
         public function getAll() {
-            $mysqli = $this->initConnectionDb();
+            $mysqli = Database::getConnection();
 
             $query = "SELECT id, nombre, isoCode  FROM idiomas";
 
@@ -77,7 +68,7 @@
         public function store() {
             $success = false;
             
-            $mysqli = $this->initConnectionDb();
+            $mysqli = Database::getConnection();
 
             $nombre = $this->getNombre();
             $isoCode = $this->getIsoCode();
@@ -96,7 +87,6 @@
                 $success = $stmt->execute();
 
                 $stmt->close();
-             
             }
 
             $mysqli->close();
@@ -106,7 +96,7 @@
 
         function update() {
             $languageEdited = false; 
-            $mysqli = $this->initConnectionDb();
+            $mysqli = Database::getConnection();
 
             $id = (int) $this->id;
             $nombre = $mysqli->real_escape_string($this->nombre);
@@ -126,10 +116,9 @@
         }
 
         public function getItem() {
-            $mysqli = $this->initConnectionDb();
+            $mysqli = Database::getConnection();
 
             $sql ="SELECT * FROM idiomas WHERE id = " . $this->id;
-            echo $sql;
 
             $query = $mysqli->query($sql);
 
@@ -143,7 +132,7 @@
 
         function delete() {
             $languageDeleted = false;
-            $mysqli = $this->initConnectionDb();
+            $mysqli = Database::getConnection();
 
             $id = (int) $this->id;
             // Comprobar que existe el idioma
