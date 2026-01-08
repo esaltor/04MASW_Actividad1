@@ -191,23 +191,38 @@
             return $itemObject;
         }
 
+        /**
+         * @return string
+         */
         function delete() {
-            $directorDeleted = false;
             $mysqli = Database::getConnection();
-
             $id = (int) $this->id;
-            // Comprobar que existe el director
-            $exists = $mysqli->query("SELECT * FROM directores WHERE id = " . $id . " LIMIT 1");
 
-            // Si existe, borra el director
-            if ($exists && $exists->num_rows === 1) {
-                if ($query = $mysqli->query("DELETE FROM directores WHERE id = " . $id)) {
-                    $directorDeleted = true;
-                }
+            // Comprobar si existe
+            $exists = $mysqli->query("SELECT 1 FROM directores WHERE id = " . $id);
+            if (!$exists || $exists->num_rows === 0) {
+                $mysqli->close();
+                return 'not_found';
             }
-            $mysqli->close();
 
-            return $directorDeleted;
+            // Comprobar si tiene series asociadas
+            $hasSeries = $mysqli->query(
+                "SELECT 1 FROM series WHERE directorId = " . $id . " LIMIT 1"
+            );
+
+            if ($hasSeries && $hasSeries->num_rows > 0) {
+                $mysqli->close();
+                return 'has_series';
+            }
+
+            // Borrar director
+            if ($mysqli->query("DELETE FROM directores WHERE id = " . $id)) {
+                $mysqli->close();
+                return 'deleted';
+            }
+
+            $mysqli->close();
+            return 'error';
         }
     }
 ?>

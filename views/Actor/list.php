@@ -28,7 +28,7 @@
                         <td><?php
         echo $actor->getSurnames(); ?></td>
                         <td><?php
-        echo $actor->getBirthDate(); ?></td>
+        echo date("d/m/Y", strtotime($actor->getBirthDate())); ?></td>
                         <td><?php
         echo $actor->getNationality(); ?></td>
                         <td>
@@ -36,7 +36,7 @@
                                 <a class="btn btn-success" href="index.php?controller=actor&action=edit&id=<?php
         echo $actor->getId(); ?>">Editar</a>
 
-                                <form name="delete_actor" action="index.php?controller=actor&action=delete" method="POST" style="...">
+                                <form name="delete_actor" action="index.php?controller=actor&action=delete" method="POST">
                                     <input type="hidden" name="actorId" value="<?php
         echo $actor->getId(); ?>" />
                                     <button type="submit" class="btn btn-danger">Borrar</button>
