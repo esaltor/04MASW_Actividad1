@@ -82,10 +82,10 @@
             $nombre = $this->getNombre();
             $isoCode = $this->getIsoCode();
 
-            // Comprobar que no existe una plataforma con el mismo nombre
+            // Comprobar que no existe un idioma con el mismo nombre
             $exists = $mysqli->query("SELECT 1 FROM idiomas WHERE nombre = '" . $nombre . "' LIMIT 1");
 
-            // Si no existe, crea la plataforma
+            // Si no existe, crea el idioma
             if ($exists && $exists->num_rows === 0) {
 
                 $query = "INSERT INTO idiomas (nombre, isoCode) VALUES (?, ?)";
@@ -129,8 +129,7 @@
             $mysqli = $this->initConnectionDb();
 
             $sql ="SELECT * FROM idiomas WHERE id = " . $this->id;
-            echo $sql;
-
+            
             $query = $mysqli->query($sql);
 
             foreach ($query as $item) {

@@ -4,15 +4,16 @@
     function listLanguages() {
         $model = new Language();
         $languageList = $model->getAll();
-        $languageObjectArray = [];
+        #$languageObjectArray = [];
 
-        foreach ($languageList as $languageItem) {
+        #foreach ($languageList as $languageItem) {
             
-            $languageObject = new Language($languageItem->getId(), $languageItem->getNombre(), $languageItem->getIsoCode());
-            array_push($languageObjectArray, $languageObject);
-        }
+        #    $languageObject = new Language($languageItem->getId(), $languageItem->getNombre(), $languageItem->getIsoCode());
+        #    array_push($languageObjectArray, $languageObject);
+        #}
 
-        return $languageObjectArray; 
+        #return $languageObjectArray; 
+        return $languageList;
     }
 
     function storeLanguage($nombre, $isoCode) {
@@ -32,7 +33,7 @@
     }
 
     function getLanguageData($idLanguage) {
-        echo $idLanguage;
+
         $language = new Language($idLanguage);
         $languageObject = $language->getItem();
 
