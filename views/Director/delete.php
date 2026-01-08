@@ -11,10 +11,10 @@
 <?php
     $directorDeleted = false;
     $hasDirectorId = isset($_POST['directorId']);
+    $result = null;
 
     if ($hasDirectorId) {
-        $idDirector = (int) $_POST['directorId'];
-        $directorDeleted = deleteDirector($idDirector);
+        $result = deleteDirector((int)$_POST['directorId']);
     }
 ?>
 
@@ -24,16 +24,27 @@
             No se ha recibido el identificador del director.<br><a href="index.php?controller=director&action=list">Volver al listado de directores.</a>
         </div>
     </div>
-<?php } elseif ($directorDeleted) { ?>
-    <div class="row">
-        <div class="alert alert-success" role="alert">
-            Director borrado correctamente.<br><a href="index.php?controller=director&action=list">Volver al listado de directores.</a>
-        </div>
+<?php } elseif ($result === 'deleted') { ?>
+    <div class="alert alert-success">
+        Director borrado correctamente.
+        <br><a href="index.php?controller=director&action=list">Volver al listado de directores.</a>
     </div>
-<?php } else { ?>
-    <div class="row">
-        <div class="alert alert-danger" role="alert">
-            El director no se ha borrado correctamente.<br><a href="index.php?controller=director&action=list">Volver a intentarlo.</a>
-        </div>
+
+<?php } elseif ($result === 'has_series') { ?>
+    <div class="alert alert-danger">
+        No se puede borrar el director porque tiene series asociadas.
+        <br><a href="index.php?controller=director&action=list">Volver al listado de directores.</a>
+    </div>
+
+<?php } elseif ($result === 'not_found') { ?>
+    <div class="alert alert-warning">
+        El director no existe.
+        <br><a href="index.php?controller=director&action=list">Volver al listado de directores.</a>
+    </div>
+
+<?php } elseif ($result === 'error') { ?>
+    <div class="alert alert-danger">
+        Se ha producido un error al intentar borrar el director.
+        <br><a href="index.php?controller=director&action=list">Volver a intentarlo.</a>
     </div>
 <?php } ?>

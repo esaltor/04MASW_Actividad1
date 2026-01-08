@@ -15,6 +15,21 @@
     }
 
     function storeActor($actorName, $actorLastName, $actorBirthDate, $actorNationality) {
+        // Validaciones generales
+        if (
+            empty($actorName) ||
+            empty($actorLastName) ||
+            empty($actorBirthDate) ||
+            empty($actorNationality)
+        ) {
+            return false;
+        }
+
+        // Validar fecha
+        $date = DateTime::createFromFormat('Y-m-d', $actorBirthDate);
+        if (!$date) {
+            return false;
+        }
         $newActor = new Actor(null, $actorName, $actorLastName, $actorBirthDate, $actorNationality);
         $actorCreated = $newActor->store();
 
@@ -22,6 +37,22 @@
     }
 
     function updateActor($actorId, $actorName, $actorLastName, $actorBirthDate, $actorNationality) {
+        // Validaciones generales
+        if (
+            empty($actorId) ||
+            empty($actorName) ||
+            empty($actorLastName) ||
+            empty($actorBirthDate) ||
+            empty($actorNationality)
+        ) {
+            return false;
+        }
+
+        // Validacion fecha
+        $date = DateTime::createFromFormat('Y-m-d', $actorBirthDate);
+        if (!$date) {
+            return false;
+        }
         $actor = new Actor($actorId, $actorName, $actorLastName, $actorBirthDate, $actorNationality);
         $actorEdited = $actor->update();
 

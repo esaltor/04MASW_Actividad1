@@ -112,22 +112,34 @@
         }
 
         function delete() {
-            $platformDeleted = false;
             $mysqli = Database::getConnection();
-
             $id = (int) $this->id;
-            // Comprobar que existe la plataforma
-            $exists = $mysqli->query("SELECT 1 FROM plataformas WHERE id = " . $id . " LIMIT 1");
 
-            // Si existe, borra la plataforma
-            if ($exists && $exists->num_rows === 1) {
-                if ($query = $mysqli->query("DELETE FROM plataformas WHERE id = " . $id)) {
-                    $platformDeleted = true;
-                }
+            // Comprobar si existe
+            $exists = $mysqli->query("SELECT 1 FROM plataformas WHERE id = " . $id);
+            if (!$exists || $exists->num_rows === 0) {
+                $mysqli->close();
+                return 'not_found';
             }
-            $mysqli->close();
 
-            return $platformDeleted;
+            // Comprobar si tiene series asociadas
+            $hasSeries = $mysqli->query(
+                "SELECT 1 FROM series WHERE plataformaId = " . $id . " LIMIT 1"
+            );
+
+            if ($hasSeries && $hasSeries->num_rows > 0) {
+                $mysqli->close();
+                return 'has_series';
+            }
+
+            // Borrar plataforma
+            if ($mysqli->query("DELETE FROM plataformas WHERE id = " . $id)) {
+                $mysqli->close();
+                return 'deleted';
+            }
+
+            $mysqli->close();
+            return 'error';
         }
     }
 ?>

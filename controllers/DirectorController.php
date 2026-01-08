@@ -101,8 +101,6 @@
 
     function deleteDirector($directorId) {
         $director = new Director($directorId);
-        $directorDeleted = $director->delete();
-
-        return $directorDeleted;
+        return $director->delete();
     }
 ?>
