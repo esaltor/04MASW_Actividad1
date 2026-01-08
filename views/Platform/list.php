@@ -44,7 +44,7 @@
         } else {
     ?>
     <div class="alert alert-warning" role="alert">
-        AÃºn no existen plataformas
+        No existen plataformas
     </div>
     <?php
         }

@@ -1,11 +1,17 @@
 <?php
+    require_once __DIR__ . '/../config/database.php';
+
     class Platform {
         private $id;
         private $name;
 
         public function __construct($idPlatform = null, $namePlatform = null) {
-            $this->id = $idPlatform;
-            $this->name = $namePlatform;
+            if (!is_null(value: $idPlatform)) {
+                $this->id = $idPlatform;
+            }
+            if (!is_null(value: $namePlatform)) {
+                $this->name = $namePlatform;
+            }
         }
 
         /**
@@ -37,28 +43,10 @@
         }
 
         /**
-         * @return mysqli
-         */
-        function initConnectionDb() {
-            $db_host = "localhost";
-            $db_user = "root";
-            $db_password = "";
-            $db_db = "04masw";
-
-            $mysqli = new mysqli($db_host, $db_user, $db_password, $db_db);
-
-            if ($mysqli->connect_error) {
-                die("Error: ".$mysqli->connect_error);
-            }
-
-            return $mysqli;
-        }
-
-        /**
          * @return array
          */
         function getAll() {
-            $mysqli = $this->initConnectionDb();
+            $mysqli = Database::getConnection();
             $query = $mysqli->query("SELECT * FROM plataformas");
             $listData = [];
             
@@ -74,7 +62,7 @@
 
         function store() {
             $platformCreated = false;
-            $mysqli = $this->initConnectionDb();
+            $mysqli = Database::getConnection();
             
             $name = $mysqli->real_escape_string($this->name);
             // Comprobar que no existe una plataforma con el mismo nombre
@@ -93,7 +81,7 @@
 
         function update() {
             $platformEdited = false; 
-            $mysqli = $this->initConnectionDb();
+            $mysqli = Database::getConnection();
 
             $id = (int) $this->id;
             $name = $mysqli->real_escape_string($this->name);
@@ -112,7 +100,7 @@
         }
 
         public function getItem() {
-            $mysqli = $this->initConnectionDb();
+            $mysqli = Database::getConnection();
             $query = $mysqli->query("SELECT * FROM plataformas WHERE id = " . $this->id);
 
             foreach ($query as $item) {
@@ -124,22 +112,34 @@
         }
 
         function delete() {
-            $platformDeleted = false;
-            $mysqli = $this->initConnectionDb();
-
+            $mysqli = Database::getConnection();
             $id = (int) $this->id;
-            // Comprobar que existe la plataforma
-            $exists = $mysqli->query("SELECT 1 FROM plataformas WHERE id = " . $id . " LIMIT 1");
 
-            // Si existe, borra la plataforma
-            if ($exists && $exists->num_rows === 1) {
-                if ($query = $mysqli->query("DELETE FROM plataformas WHERE id = " . $id)) {
-                    $platformDeleted = true;
-                }
+            // Comprobar si existe
+            $exists = $mysqli->query("SELECT 1 FROM plataformas WHERE id = " . $id);
+            if (!$exists || $exists->num_rows === 0) {
+                $mysqli->close();
+                return 'not_found';
             }
-            $mysqli->close();
 
-            return $platformDeleted;
+            // Comprobar si tiene series asociadas
+            $hasSeries = $mysqli->query(
+                "SELECT 1 FROM series WHERE plataformaId = " . $id . " LIMIT 1"
+            );
+
+            if ($hasSeries && $hasSeries->num_rows > 0) {
+                $mysqli->close();
+                return 'has_series';
+            }
+
+            // Borrar plataforma
+            if ($mysqli->query("DELETE FROM plataformas WHERE id = " . $id)) {
+                $mysqli->close();
+                return 'deleted';
+            }
+
+            $mysqli->close();
+            return 'error';
         }
     }
 ?>
