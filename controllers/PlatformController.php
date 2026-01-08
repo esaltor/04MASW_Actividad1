@@ -21,7 +21,7 @@
         return $platformCreated;
     }
 
-    function updatePlatform ($platformId, $platformName) {
+    function updatePlatform($platformId, $platformName) {
         $platform = new Platform($platformId, $platformName);
 
         $platformEdited = $platform->update();
