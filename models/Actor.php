@@ -1,4 +1,6 @@
 <?php
+    require_once __DIR__ . '/../config/database.php';
+
     class Actor {
         private $id;
         private $name;
@@ -7,11 +9,21 @@
         private $nationality;
 
         public function __construct($idActor = null, $nameActor = null, $surnamesActor = null, $birthDateActor = null, $nationalityActor = null) {
-            $this->id = $idActor;
-            $this->name = $nameActor;
-            $this->surnames = $surnamesActor;
-            $this->birthDate = $birthDateActor;
-            $this->nationality = $nationalityActor;
+            if (!is_null(value: $idActor)) {
+                $this->id = $idActor;
+            }
+            if (!is_null(value: $nameActor)) {
+                $this->name = $nameActor;
+            }
+            if (!is_null(value: $surnamesActor)) {
+                $this->surnames = $surnamesActor;
+            }
+            if (!is_null(value: $birthDateActor)) {
+                $this->birthDate = $birthDateActor;
+            }
+            if (!is_null(value: $nationalityActor)) {
+                $this->nationality = $nationalityActor;
+            }
         }
 
         /**
@@ -85,28 +97,10 @@
         }
 
         /**
-         * @return mysqli
-         */
-        function initConnectionDb() {
-            $db_host = "localhost";
-            $db_user = "root";
-            $db_password = "";
-            $db_db = "04masw";
-
-            $mysqli = new mysqli($db_host, $db_user, $db_password, $db_db);
-
-            if ($mysqli->connect_error) {
-                die("Error: ".$mysqli->connect_error);
-            }
-
-            return $mysqli;
-        }
-
-        /**
          * @return array
          */
         function getAll() {
-            $mysqli = $this->initConnectionDb();
+            $mysqli = Database::getConnection();
             $query = $mysqli->query("SELECT * FROM actores");
             $listData = [];
 
@@ -125,7 +119,7 @@
          */
         function store() {
             $actorCreated = false;
-            $mysqli = $this->initConnectionDb();
+            $mysqli = Database::getConnection();
 
             $name = $mysqli->real_escape_string($this->name);
             $surnames = $mysqli->real_escape_string($this->surnames);
@@ -152,7 +146,7 @@
          */
         function update() {
             $actorEdited = false;
-            $mysqli = $this->initConnectionDb();
+            $mysqli = Database::getConnection();
 
             $id = (int) $this->id;
             $name = $mysqli->real_escape_string($this->name);
@@ -176,7 +170,7 @@
         }
 
         public function getItem() {
-            $mysqli = $this->initConnectionDb();
+            $mysqli = Database::getConnection();
             $query = $mysqli->query("SELECT * FROM actores WHERE id = " . $this->id);
 
             foreach ($query as $item) {
@@ -193,7 +187,7 @@
          */
         function delete() {
             $actorDeleted = false;
-            $mysqli = $this->initConnectionDb();
+            $mysqli = Database::getConnection();
 
             $id = (int) $this->id;
             // Comprobar que existe el actor
