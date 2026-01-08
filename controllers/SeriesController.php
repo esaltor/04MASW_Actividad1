@@ -3,16 +3,9 @@
 
     function listSeries() {
         $model = new Series();
-        $seriesList = $model->getAllDirectorPlatform();
-        #$seriesObjectArray = [];
-
-        #foreach ($seriesList as $seriesItem) {
-            
-        #    $seriesObject = new Series($seriesItem->getId(), $seriesItem->getTitulo(), $seriesItem->getPlataformaId(), $seriesItem->getDirectorId(), $seriesItem->getActores(), $seriesItem->getIdiomasAudio(), $seriesItem->getIdiomasSubtitulos());
-        #    array_push($seriesObjectArray, $seriesObject);
-        #}
-
-        #return $seriesObjectArray; 
+        
+        $seriesList = $model->getAllDirectorPlatform(); 
+        
         return $seriesList;
 
     }
@@ -31,9 +24,9 @@
 
      function updateSeries ($seriesId, $seriesName, $plataformaId, $directorId, $actores, $idiomasAudio, $idiomasSubtitulos) {
         $series = new Series($seriesId, $seriesName, $plataformaId, $directorId, $actores, $idiomasAudio, $idiomasSubtitulos);
-        echo "antes de update";
+        
         $seriesEdited = $series->update();
-        echo "después de update";
+        
         return $seriesEdited;
     }
 

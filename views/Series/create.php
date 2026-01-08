@@ -23,9 +23,9 @@
                 </select>
             </div>
 
-             <?php
-                #$directors = listDirectors();
-             ?>
+            <?php
+                $directors = listDirectors();
+            ?>
 
 
             <div class="mb-3">

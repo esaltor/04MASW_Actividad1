@@ -3,16 +3,9 @@
 
     function listLanguages() {
         $model = new Language();
+
         $languageList = $model->getAll();
-        #$languageObjectArray = [];
 
-        #foreach ($languageList as $languageItem) {
-            
-        #    $languageObject = new Language($languageItem->getId(), $languageItem->getNombre(), $languageItem->getIsoCode());
-        #    array_push($languageObjectArray, $languageObject);
-        #}
-
-        #return $languageObjectArray; 
         return $languageList;
     }
 
@@ -24,7 +17,7 @@
     }
 
 
-     function updateLanguage ($languageId, $languageName, $isoCode) {
+    function updateLanguage ($languageId, $languageName, $isoCode) {
         $language = new Language($languageId, $languageName, $isoCode);
 
         $languageEdited = $language->update();
