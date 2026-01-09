@@ -101,7 +101,7 @@
         }
 
         public function getAll() {
-            $mysqli = $this->initConnectionDb();
+            $mysqli = Database::getConnection();
 
             $query = "SELECT id, titulo, plataformaId, directorId, actores, idiomasAudio, idiomasSubtitulos FROM series";
 
@@ -254,6 +254,67 @@
             $mysqli->close();
 
             return $seriesDeleted;
+        }
+
+        public static function deleteActorFromAllSeries($fullName) {
+            $mysqli = Database::getConnection();
+
+            $series = $mysqli->query(
+                "SELECT id, actores FROM series WHERE actores LIKE '%" . $mysqli->real_escape_string($fullName) . "%'"
+            );
+
+            if ($series) {
+                while ($serie = $series->fetch_assoc()) {
+                    $actorsArray = array_map('trim', explode(',', $serie['actores']));
+                    $actorsArray = array_filter($actorsArray, fn($a) => $a !== $fullName);
+
+                    $newActors = implode(', ', $actorsArray);
+                    $mysqli->query(
+                        "UPDATE series SET actores = '" . $mysqli->real_escape_string($newActors) . "' 
+                        WHERE id = " . (int)$serie['id']
+                    );
+                }
+            }
+
+            $mysqli->close();
+        }
+
+        public static function deleteLanguageFromAllSeries($language) {
+            $mysqli = Database::getConnection();
+
+            $series = $mysqli->query(
+                "SELECT id, idiomasAudio, IdiomasSubtitulos " . 
+                "FROM series WHERE idiomasAudio LIKE '%" . $mysqli->real_escape_string($language) . 
+                "%' OR IdiomasSubtitulos LIKE '%" . $mysqli->real_escape_string($language) . "%'"
+            );
+
+            if ($series) {
+                while ($serie = $series->fetch_assoc()) {
+                    if ($serie['idiomasAudio'].include($language)) {
+                        $languagesArray = array_map('trim', explode(',', $serie['idiomasAudio']));
+                        $languagesArray = array_filter($languagesArray, fn($a) => $a !== $language);
+
+                        $newLanguages = implode(', ', $languagesArray);
+                        $mysqli->query(
+                            "UPDATE series SET idiomasAudio = '" . $mysqli->real_escape_string($newLanguages) . "' 
+                            WHERE id = " . (int)$serie['id']
+                        );
+                    }
+                    
+                    if ($serie['IdiomasSubtitulos'].include($language)) {
+                        $languagesArray = array_map('trim', explode(',', $serie['IdiomasSubtitulos']));
+                        $languagesArray = array_filter($languagesArray, fn($a) => $a !== $language);
+
+                        $newLanguages = implode(', ', $languagesArray);
+                        $mysqli->query(
+                            "UPDATE series SET IdiomasSubtitulos = '" . $mysqli->real_escape_string($newLanguages) . "' 
+                            WHERE id = " . (int)$serie['id']
+                        );
+                    }
+                }
+            }
+
+            $mysqli->close();
         }
 
     }

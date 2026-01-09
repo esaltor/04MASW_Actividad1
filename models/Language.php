@@ -1,5 +1,6 @@
 <?php
     require_once __DIR__ . '/../config/database.php';
+    require_once __DIR__ . '/../models/Series.php';
 
     class Language {
         private $id;
@@ -130,23 +131,35 @@
             return $itemObject;
         }
 
+        /**
+         * @return string
+         */
         function delete() {
-            $languageDeleted = false;
             $mysqli = Database::getConnection();
-
             $id = (int) $this->id;
+
             // Comprobar que existe el idioma
-            $exists = $mysqli->query("SELECT 1 FROM idiomas WHERE id = " . $id . " LIMIT 1");
-
-            // Si existe, borra el idioma
-            if ($exists && $exists->num_rows === 1) {
-                if ($query = $mysqli->query("DELETE FROM idiomas WHERE id = " . $id)) {
-                    $languageDeleted = true;
-                }
+            $exists = $mysqli->query("SELECT isoCode FROM idiomas WHERE id = " . $id);
+            if (!$exists || $exists->num_rows === 0) {
+                $mysqli->close();
+                return 'not_found';
             }
-            $mysqli->close();
 
-            return $languageDeleted;
+            // Codigo del idioma
+            $languageData = $exists->fetch_assoc();
+            $code = $languageData['isoCode'];
+
+            // Borrar idioma
+            if ($mysqli->query("DELETE FROM idiomas WHERE id = " . $id)) {
+                // Si tiene series asociadas se elimina del listado de idiomasAudio y/o idiomasSubtitulos el seleccionado
+                Series::deleteLanguageFromAllSeries($code);
+
+                $mysqli->close();
+                return 'deleted';
+            }
+
+            $mysqli->close();
+            return 'error';
         }
 
     }

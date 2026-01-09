@@ -1,5 +1,6 @@
 <?php
     require_once __DIR__ . '/../config/database.php';
+    require_once __DIR__ . '/../models/Series.php';
 
     class Actor {
         private $id;
@@ -183,26 +184,34 @@
         }
 
         /**
-         * @return bool
+         * @return string
          */
         function delete() {
-            $actorDeleted = false;
             $mysqli = Database::getConnection();
-
             $id = (int) $this->id;
-            // Comprobar que existe el actor
-            $exists = $mysqli->query("SELECT 1 FROM actores WHERE id = " . $id . " LIMIT 1");
 
-            // Si existe, borra el actor
-            if ($exists && $exists->num_rows === 1) {
-                if ($query = $mysqli->query("DELETE FROM actores WHERE id = " . $id)) {
-                    $actorDeleted = true;
-                }
+            // Comprobar si existe el actor
+            $exists = $mysqli->query("SELECT nombre, apellidos FROM actores WHERE id = " . $id);
+            if (!$exists || $exists->num_rows === 0) {
+                $mysqli->close();
+                return 'not_found';
+            }
+
+            // Nombre completo
+            $actorData = $exists->fetch_assoc();
+            $fullName = trim($actorData['nombre'] . ' ' . $actorData['apellidos']);
+
+            // Borrar actor
+            if ($mysqli->query("DELETE FROM actores WHERE id = " . $id)) {
+                // Si tiene series asociadas se elimina del listado de actores el seleccionado
+                Series::deleteActorFromAllSeries($fullName);
+
+                $mysqli->close();
+                return 'deleted';
             }
 
             $mysqli->close();
-
-            return $actorDeleted;
+            return 'error';
         }
     }
 ?>
