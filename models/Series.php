@@ -1,4 +1,6 @@
 <?php
+    require_once __DIR__ . '/../config/database.php';
+
     class Series {
         private $id;
         private $titulo;
@@ -85,24 +87,10 @@
         public function setDirectorNombre($directorNombreSeries) {
             $this->directorNombre = $directorNombreSeries;
         }
-
-        function initConnectionDb() {
-            $db_host = "localhost";
-            $db_user = "root";
-            $db_password = "+-+-";
-            $db_db = "04masw";
-
-            $mysqli = new mysqli($db_host, $db_user, $db_password, $db_db);
-
-            if ($mysqli->connect_error) {
-                die("Error: ".$mysqli->connect_error);
-            }
-
-            return $mysqli;
-        }
-
+       
         public function getAll() {
-            $mysqli = $this->initConnectionDb();
+            $mysqli = $mysqli = Database::getConnection();
+
 
             $query = "SELECT id, titulo, plataformaId, directorId, actores, idiomasAudio, idiomasSubtitulos FROM series";
 
@@ -123,7 +111,7 @@
         }
 
         public function getAllDirectorPlatform() {
-            $mysqli = $this->initConnectionDb();
+            $mysqli = Database::getConnection();
 
             $query = "SELECT series.id,
                              series.titulo, 
@@ -159,7 +147,7 @@
         public function store() {
             $success = false;
             
-            $mysqli = $this->initConnectionDb();
+            $mysqli = Database::getConnection();
 
             $titulo = $this->getTitulo();
             $plataformaId = $this->getPlataformaId();
@@ -192,7 +180,7 @@
 
         function update() {
             $seriesEdited = false; 
-            $mysqli = $this->initConnectionDb();
+            $mysqli = Database::getConnection();
 
             $id = (int) $this->id;
             $titulo = $this->getTitulo();
@@ -202,11 +190,8 @@
             $idiomasAudio = $this->getIdiomasAudio();
             $idiomasSubtitulos = $this->getIdiomasSubtitulos();
 
-            echo $directorId;
-            echo "#".$plataformaId."#";
-
             $sql = "SELECT 1 FROM series WHERE id = " . $id . " LIMIT 1";
-            echo $sql;
+            
             // Comprobar que existe la serie
             $exists = $mysqli->query($sql);
 
@@ -228,7 +213,7 @@
         }
 
         public function getItem() {
-            $mysqli = $this->initConnectionDb();
+            $mysqli = Database::getConnection();
 
             $sql ="SELECT * FROM series WHERE id = " . $this->id;
             
@@ -244,7 +229,7 @@
 
         function delete() {
             $seriesDeleted = false;
-            $mysqli = $this->initConnectionDb();
+            $mysqli = Database::getConnection();
 
             $id = (int) $this->id;
             // Comprobar que existe la serie

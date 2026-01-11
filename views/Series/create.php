@@ -24,7 +24,7 @@
             </div>
 
              <?php
-                #$directors = listDirectors();
+                $directors = listDirectors();
              ?>
 
 
